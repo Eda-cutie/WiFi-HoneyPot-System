@@ -1,6 +1,7 @@
 # app.py
 import streamlit as st
 import pandas as pd
+import numpy as np
 import altair as alt
 import random, csv, os, uuid, time
 from pathlib import Path
@@ -441,4 +442,5 @@ else:
 
 st.markdown("---")
 st.caption("This dashboard is a simulation for academic/demo purposes. The CSV is stored locally in the app instance and will persist while the app instance is running.")
+
 
