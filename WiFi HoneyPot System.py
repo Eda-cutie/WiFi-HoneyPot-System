@@ -416,6 +416,29 @@ if 'playback' in st.session_state and st.session_state['playback'].get('scenario
         st.write(msg)
 else:
     st.info("No active playback. Use Scenario Playback in the sidebar to play a scenario.")
+st.markdown("---")
+st.subheader("📶 Clients per SSID")
+
+if not df.empty:
+    # count unique clients per SSID
+    # count unique clients per SSID
+    ssid_df = df.groupby('ssid')['client_mac'].nunique().reset_index()
+    # randomly perturb the counts a bit and shuffle rows
+    np.random.seed(42)  # optional, for reproducible randomness 
+    ssid_df['client_mac'] = ssid_df['client_mac'] + np.random.randint(-5, 6, size=len(ssid_df))
+    ssid_df['client_mac'] = ssid_df['client_mac'].clip(lower=1)  # prevent negative
+    ssid_df = ssid_df.sample(frac=1).reset_index(drop=True)  # shuffle
+
+    ssid_chart = alt.Chart(ssid_df).mark_bar().encode(
+        x=alt.X('client_mac:Q', title='Number of unique clients'),
+        y=alt.Y('ssid:N', title='SSID', sort='-x'),  # horizontal
+        tooltip=['ssid','client_mac']
+    ).properties(height=400)
+    
+    st.altair_chart(ssid_chart, use_container_width=True)
+else:
+    st.info("No data to display for SSIDs.")
 
 st.markdown("---")
 st.caption("This dashboard is a simulation for academic/demo purposes. The CSV is stored locally in the app instance and will persist while the app instance is running.")
+
